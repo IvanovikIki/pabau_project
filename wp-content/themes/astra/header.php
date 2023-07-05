@@ -13,8 +13,67 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
+?>
+<?php
 
-?><!DOCTYPE html>
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+  $first_name = $_POST['fname'];
+  $last_name = $_POST['lname'];
+  $email = $_POST['email'];
+  $mobile = $_POST['mobile'];
+  $address = $_POST['address'];
+
+
+  $data = [
+	'api_key' => 'MTIzMDka02efd5b36cb3a55fccc71d09e036a31',
+    'first_name' => $first_name,
+    'last_name' => $last_name,
+    'email' => $email,
+    'mobile' => $mobile,
+	'address' => $address
+  ];
+	
+
+  $data_json = json_encode($data);
+
+  $url = "https://migration.pabau.com/OAuth2/leads/lead-curl.php";
+  $key = "MTIzMDka02efd5b36cb3a55fccc71d09e036a31";
+  $ch = curl_init($url);
+  curl_setopt($ch, CURLOPT_POST, true);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $data_json);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+    "Content-Type: application/json",
+    "Authorization: Bearer MTIzMDka02efd5b36cb3a55fccc71d09e036a31"
+  )); 
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+
+
+  $response = curl_exec($ch);
+
+  curl_close($ch);
+	
+	$response_array =[];
+    $response_array['status_code'] = '';
+	
+ if(!empty(json_decode($response, true))){
+	    $response_array =  json_decode($response, true);
+  };
+
+  if ($response_array['status_code'] == "200") {
+   
+    echo "<p>Lead created successfully!</p>";
+    echo "<p>Response: {$response}</p>";
+  } else {
+   
+    echo "<p>Something went wrong!</p>";
+    echo "<p>Response: {$response}</p>";
+  }
+}
+
+?>
+
+<!DOCTYPE html>
 <?php astra_html_before(); ?>
 <html <?php language_attributes(); ?>>
 <head>
